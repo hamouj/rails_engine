@@ -181,8 +181,8 @@
         "lines": [
           1,
           1,
-          2,
-          2,
+          1,
+          1,
           null,
           null
         ]
@@ -270,6 +270,10 @@
       },
       "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/customer.rb": {
         "lines": [
+          null,
+          null,
+          null,
+          1,
           1,
           null
         ]
@@ -280,8 +284,130 @@
           1,
           null
         ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/spec/models/invoice_item_spec.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          2,
+          2,
+          null,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/invoice_item.rb": {
+        "lines": [
+          null,
+          null,
+          null,
+          1,
+          1,
+          1,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/spec/models/invoice_spec.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          null,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/invoice.rb": {
+        "lines": [
+          null,
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/spec/models/item_spec.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          2,
+          2,
+          2,
+          null,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/item.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/spec/models/merchant_spec.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          2,
+          2,
+          null,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/merchant.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/spec/models/transaction_spec.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          2,
+          null,
+          null
+        ]
+      },
+      "/Users/jasminehamou/turing_work/3Mod/projects/rails-engine/app/models/transaction.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ]
       }
     },
-    "timestamp": 1679944037
+    "timestamp": 1679946960
   }
 }
