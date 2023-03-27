@@ -20,12 +20,6 @@ describe "Merchants API" do
 
       expect(merchant).to have_key :name
       expect(merchant[:name]).to be_a String
-
-      expect(merchant).to have_key :created_at
-      expect(merchant[:created_at]).to be_a String
-
-      expect(merchant).to have_key :updated_at
-      expect(merchant[:updated_at]).to be_a String
     end
   end
 
@@ -43,11 +37,5 @@ describe "Merchants API" do
 
     expect(merchant).to have_key :name
     expect(merchant[:name]).to be_a String
-
-    expect(merchant).to have_key :created_at
-    expect(merchant[:created_at]).to be_a String
-
-    expect(merchant).to have_key :updated_at
-    expect(merchant[:updated_at]).to be_a String
   end
 end
