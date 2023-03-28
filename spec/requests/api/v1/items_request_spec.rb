@@ -250,5 +250,50 @@ describe "Items API" do
         expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'=180984789")
       end
     end
+
+    describe "create an item" do
+      it "returns a json error message when one attribute is missing" do
+        item_params = ({
+                        name: "Fancy Lamp",
+                        description: "This is a very fancy lamp.",
+                        unit_price: 125.33,
+        })
+        headers = {"CONTENT_TYPE" => "application/json"}
+
+        post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Merchant must exist")
+      end
+
+      it "returns a json error message when more than one attribute is missing" do
+        item_params = ({
+                        name: "Fancy Lamp",
+                        description: "This is a very fancy lamp.",
+        })
+        headers = {"CONTENT_TYPE" => "application/json"}
+
+        post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Merchant must exist")
+        expect(response_body[:errors].second).to eq("Unit price can't be blank")
+        expect(response_body[:errors].last).to eq("Unit price is not a number")
+      end
+    end
   end
 end
