@@ -7,7 +7,13 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show
-    render json: ItemSerializer.new(Item.find(params[:id]))
+    begin
+      item = Item.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => error
+      render json: ErrorSerializer.serialized_json(error), status: 404
+    else
+      render json: ItemSerializer.new(item)
+    end
   end
 
   def create
@@ -22,7 +28,14 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
-    render json: Item.delete(params[:id]), status: 204
+    begin
+      item = Item.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => error
+      render json: ErrorSerializer.serialized_json(error), status: 404
+    else
+      item.find_single_item_invoices.destroy_all
+      render json: item.destroy, status: 204
+    end
   end
 
   private
