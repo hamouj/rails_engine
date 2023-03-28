@@ -40,7 +40,7 @@ describe "Merchants API" do
   end
 
   it "can list a specific merchant's items" do
-    id = create(:merchant).id.to_s
+    id = create(:merchant).id
 
     create_list(:item, 4, merchant_id: id)
 
