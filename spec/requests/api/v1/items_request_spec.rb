@@ -79,7 +79,7 @@ describe "Items API" do
     expect(created_item.merchant_id).to eq(item_params[:merchant_id])
   end
 
-  it "can update an existing item" do
+  it "can update an existing item when given partial attributes" do
     merchant_id = create(:merchant).id
     id = create(:item, merchant_id: merchant_id).id
     previous_name = Item.last.name
@@ -87,12 +87,40 @@ describe "Items API" do
     item_params = { name: 'Super Cool Lamp' }
     headers = {"CONTENT_TYPE" => "application/json"}
 
-    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
     item = Item.find(id)
 
     expect(response).to be_successful
     expect(item.name).to eq('Super Cool Lamp')
     expect(item.name).to_not eq(previous_name)
+  end
+
+  it "can update an existing item with all new information" do
+    merchant_id = create(:merchant).id
+    id = create(:item, merchant_id: merchant_id).id
+    previous_data = Item.last
+
+    item_params = ({
+                    name: "Awesome Lamp",
+                    description: "This is the awesomest lamp.",
+                    unit_price: 12.50,
+                    merchant_id: merchant_id
+    })
+
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    item = Item.find(id)
+
+    expect(response).to be_successful
+    expect(item.name).to eq("Awesome Lamp")
+    expect(item.name).to_not eq(previous_data.name)
+
+    expect(item.description).to eq("This is the awesomest lamp.")
+    expect(item.description).to_not eq(previous_data.description)
+
+    expect(item.unit_price).to eq(12.50)
+    expect(item.unit_price).to_not eq(previous_data.unit_price)
   end
 
   it "can destroy an item" do
