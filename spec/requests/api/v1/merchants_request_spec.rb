@@ -107,6 +107,7 @@ describe "Merchants API" do
         expect(response_body[:message]).to eq("your query could not be completed")
         expect(response_body).to have_key :errors
         expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Merchant with 'id'=180984789")
       end
     end
 
@@ -148,6 +149,7 @@ describe "Merchants API" do
         expect(response_body[:message]).to eq("your query could not be completed")
         expect(response_body).to have_key :errors
         expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Merchant with 'id'=180984789")
       end
     end
   end
