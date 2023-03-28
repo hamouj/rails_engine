@@ -94,4 +94,15 @@ describe "Items API" do
     expect(item.name).to eq('Super Cool Lamp')
     expect(item.name).to_not eq(previous_name)
   end
+
+  it "can destroy an item" do
+    merchant_id = create(:merchant).id
+    item = create(:item, merchant_id: merchant_id)
+    
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response).to be_successful
+    expect(Item.count).to eq(0)
+    expect{ Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
+  end
 end
