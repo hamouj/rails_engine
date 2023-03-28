@@ -87,7 +87,7 @@ describe "Items API" do
     item_params = { name: 'Super Cool Lamp' }
     headers = {"CONTENT_TYPE" => "application/json"}
 
-    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
+    patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
     item = Item.find(id)
 
     expect(response).to be_successful
@@ -109,7 +109,7 @@ describe "Items API" do
 
     headers = {"CONTENT_TYPE" => "application/json"}
 
-    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
     item = Item.find(id)
 
     expect(response).to be_successful
@@ -129,8 +129,24 @@ describe "Items API" do
     
     delete "/api/v1/items/#{item.id}"
 
-    expect(response).to be_successful
+    expect(response.status).to eq(204)
     expect(Item.count).to eq(0)
     expect{ Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "can get the merchant data for a given item ID" do
+    item_merchant = create(:merchant)
+    item = create(:item, merchant_id: item_merchant.id)
+
+    get "/api/v1/items/#{item.id}/merchant"
+
+    expect(response).to be_successful
+    merchant = JSON.parse(response.body, symbolize_names: true)[:data]
+
+    expect(merchant).to have_key :id
+    expect(merchant[:id]).to eq(item_merchant.id.to_s)
+
+    expect(merchant[:attributes]).to have_key :name
+    expect(merchant[:attributes][:name]).to eq(item_merchant.name)
   end
 end
