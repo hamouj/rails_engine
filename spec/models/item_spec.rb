@@ -9,6 +9,13 @@ describe Item, type: :model do
     it { should belong_to :merchant }
   end
 
+  describe 'validations' do
+    it { should validate_presence_of :name }
+    it { should validate_presence_of :description }
+    it { should validate_presence_of :unit_price }
+    it { should validate_numericality_of :unit_price }
+  end
+
   describe 'class_methods' do
     before(:each) do
       @merchant1 = create(:merchant)
@@ -26,6 +33,34 @@ describe Item, type: :model do
         item4 = create(:item, merchant_id: @merchant1.id)
 
         expect(Item.for_merchant(@merchant1.id)).to eq([@item1, @item2, item4])
+      end
+    end
+  end
+
+  describe 'instance methods' do
+    before(:each) do
+      @customer_id = create(:customer).id
+      @merchant_id = create(:merchant).id
+
+      @item1 = create(:item, merchant_id: @merchant_id)
+      @item2 = create(:item, merchant_id: @merchant_id)
+
+      @invoice1 = create(:invoice, merchant_id: @merchant_id, customer_id: @customer_id)
+      create(:invoice_item, item_id: @item1.id, invoice_id: @invoice1.id)
+
+      @invoice2 = create(:invoice, merchant_id: @merchant_id, customer_id: @customer_id)
+      create(:invoice_item, item_id: @item1.id, invoice_id: @invoice2.id)
+      create(:invoice_item, item_id: @item2.id, invoice_id: @invoice2.id)
+    end
+
+    describe '#find_single_item_invoices' do
+      it 'returns invoices where the item is the only item on the invoice' do
+        expect(@item1.find_single_item_invoices).to eq([@invoice1])
+
+        invoice3 = create(:invoice, merchant_id: @merchant_id, customer_id: @customer_id)
+        create(:invoice_item, item_id: @item1.id, invoice_id: invoice3.id)
+
+        expect(@item1.find_single_item_invoices).to eq([@invoice1, invoice3])
       end
     end
   end

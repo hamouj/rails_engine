@@ -10,4 +10,14 @@ class ErrorSerializer
       ]
     }
   end
+
+  def self.item_serialized_json(error)
+    {
+      "message": "your query could not be completed",
+      "errors":
+        error.full_messages.each do |message|
+          "#{message}"
+        end
+    }
+  end
 end
