@@ -78,6 +78,26 @@ describe "Items API" do
       expect(created_item.merchant_id).to eq(item_params[:merchant_id])
     end
 
+    it "changes a given string to an integer/float and creates the item" do
+      merchant_id = create(:merchant).id
+      item_params = ({
+                      name: "Fancy Lamp",
+                      description: "This is a very fancy lamp.",
+                      unit_price: "125.33",
+                      merchant_id: merchant_id.to_s
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+      created_item = Item.last
+
+      expect(response).to be_successful
+      expect(created_item.name).to eq(item_params[:name])
+      expect(created_item.description).to eq(item_params[:description])
+      expect(created_item.unit_price).to eq(item_params[:unit_price].to_f)
+      expect(created_item.merchant_id).to eq(item_params[:merchant_id].to_i)
+    end
+
     it "can update an existing item when given partial attributes" do
       merchant_id = create(:merchant).id
       id = create(:item, merchant_id: merchant_id).id
@@ -96,6 +116,7 @@ describe "Items API" do
 
     it "can update an existing item with all new information" do
       merchant_id = create(:merchant).id
+      merchant2_id = create(:merchant).id
       id = create(:item, merchant_id: merchant_id).id
       previous_data = Item.last
 
@@ -103,7 +124,7 @@ describe "Items API" do
                       name: "Awesome Lamp",
                       description: "This is the awesomest lamp.",
                       unit_price: 12.50,
-                      merchant_id: merchant_id
+                      merchant_id: merchant2_id
       })
 
       headers = {"CONTENT_TYPE" => "application/json"}
@@ -120,6 +141,9 @@ describe "Items API" do
 
       expect(item.unit_price).to eq(12.50)
       expect(item.unit_price).to_not eq(previous_data.unit_price)
+
+      expect(item.merchant_id).to eq(merchant2_id)
+      expect(item.merchant_id).to_not eq(previous_data.merchant_id)
     end
 
     it "can destroy an item" do
@@ -161,7 +185,7 @@ describe "Items API" do
       expect{ Invoice.find(invoice1.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "destroys all invoices if the destroyed item was the only item on the invoice" do
+    it "destroys multiple invoices if the destroyed item was the only item on the invoice" do
       customer_id = create(:customer).id
       merchant_id = create(:merchant).id
 
@@ -256,7 +280,7 @@ describe "Items API" do
         item_params = ({
                         name: "Fancy Lamp",
                         description: "This is a very fancy lamp.",
-                        unit_price: 125.33,
+                        unit_price: 125.33
         })
         headers = {"CONTENT_TYPE" => "application/json"}
 
@@ -276,7 +300,7 @@ describe "Items API" do
       it "returns a json error message when more than one attribute is missing" do
         item_params = ({
                         name: "Fancy Lamp",
-                        description: "This is a very fancy lamp.",
+                        description: "This is a very fancy lamp."
         })
         headers = {"CONTENT_TYPE" => "application/json"}
 
@@ -293,6 +317,165 @@ describe "Items API" do
         expect(response_body[:errors].first).to eq("Merchant must exist")
         expect(response_body[:errors].second).to eq("Unit price can't be blank")
         expect(response_body[:errors].last).to eq("Unit price is not a number")
+      end
+    end
+
+    describe "update an item" do
+      it "returns a json error message when the item ID does not exist" do
+        patch "/api/v1/items/5678934"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'=5678934")
+      end
+    end
+
+    describe "delete an item" do
+      it "returns a json error message when the item ID does not exist" do
+        delete "/api/v1/items/5678934"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'=5678934")
+      end
+    end
+
+    describe "get the merchant data for a given item ID" do
+      it "returns a json error message when the item ID does not exist" do
+        get "/api/v1/items/789073/merchant"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'=789073")
+      end
+    end
+  end
+
+  describe "edge case testing" do
+    describe "get one item" do
+      it "returns a json error message when the item id is a string" do
+        get "/api/v1/items/'1809A4789'"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='1809A4789'")
+      end
+    end
+
+    describe "create an item" do
+      it "returns a json error when an array is entered as the unit price" do
+        merchant_id = create(:merchant).id
+        item_params = ({
+                        name: "Fancy Lamp",
+                        description: "This is a very fancy lamp.",
+                        unit_price: [125, 33.5],
+                        merchant_id: merchant_id
+        })
+        headers = {"CONTENT_TYPE" => "application/json"}
+  
+        post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+        
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Unit price can't be blank")
+      end
+    end
+
+    describe "update an item" do
+      it "returns a json error message when the merchant ID does not exist" do
+        merchant_id = create(:merchant).id
+        id = create(:item, merchant_id: merchant_id).id
+  
+        item_params = { merchant_id: "458973" }
+        headers = {"CONTENT_TYPE" => "application/json"}
+  
+        patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
+        
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Merchant must exist")
+      end
+
+      it "return a json error message when the item ID is entered as a string" do
+        patch "/api/v1/items/'5678934'"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='5678934'")
+      end
+    end
+
+    describe "delete an item" do
+      it "returns a json error message when the item ID is entered as a string" do
+        delete "/api/v1/items/'5678934'"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='5678934'")
+      end
+    end
+
+    describe "get the merchant data for a given item ID" do
+      it "returns a json error message when the item ID is entered as a string" do
+        get "/api/v1/items/'789073'/merchant"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors]).to be_an Array
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='789073'")
       end
     end
   end

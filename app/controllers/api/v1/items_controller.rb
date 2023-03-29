@@ -18,8 +18,7 @@ class Api::V1::ItemsController < ApplicationController
 
   def create
     item = Item.new(item_params)
-    if item.valid?
-      item.save
+    if item.save
       render json: ItemSerializer.new(item), status: :created
     else
       render json: ErrorSerializer.item_serialized_json(item.errors), status: 404
@@ -27,9 +26,17 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    item = Item.find(params[:id])
-    item.update(item_params)
-    render json: ItemSerializer.new(item)
+    begin
+      item = Item.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => error
+      render json: ErrorSerializer.serialized_json(error), status: 404
+    else
+      if item.update(item_params)
+        render json: ItemSerializer.new(item)
+      else
+        render json: ErrorSerializer.item_serialized_json(item.errors), status: 404
+      end
+    end
   end
 
   def destroy
@@ -39,7 +46,7 @@ class Api::V1::ItemsController < ApplicationController
       render json: ErrorSerializer.serialized_json(error), status: 404
     else
       item.find_single_item_invoices.destroy_all
-      render json: item.destroy, status: 204
+      item.destroy
     end
   end
 
