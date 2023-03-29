@@ -22,15 +22,49 @@ describe "Find API" do
   end
 
   describe "sad path testing" do
-    it "returns an empty hash when there is no match" do
-      get "/api/v1/merchants/find?name=NOMATCH"
+    describe "find one merchant by name" do
+      it "returns an empty hash when there is no match" do
+        get "/api/v1/merchants/find?name=NOMATCH"
+          
+        expect(response).to be_successful
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :data
+        expect(response_body[:data]).to eq({})
+      end
+    end
+  end
+
+  describe "edge case testing" do
+    describe "find one merchant by name" do
+      it "returns a json error when the parameters are missing" do
+        get "/api/v1/merchants/find"
+
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
         
-      expect(response).to be_successful
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors].first).to eq("parameter cannot be missing")
+      end
 
-      response_body = JSON.parse(response.body, symbolize_names: true)
+      it "returns a json error when the parameters are empty" do
+        get "/api/v1/merchants/find?name="
 
-      expect(response_body).to have_key :data
-      expect(response_body[:data]).to eq({})
+        expect(response.status).to eq(404)
+
+        response_body = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response_body).to have_key :message
+        expect(response_body[:message]).to eq("your query could not be completed")
+        
+        expect(response_body).to have_key :errors
+        expect(response_body[:errors].first).to eq("parameter cannot be missing")
+      end
     end
   end
 end

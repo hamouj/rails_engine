@@ -26,4 +26,13 @@ class ErrorSerializer
       "data": {}
     }
   end
+
+  def self.missing_parameter
+    {
+      "message": "your query could not be completed",
+        "errors": [
+          "parameter cannot be missing"
+        ]
+    }
+  end
 end
