@@ -15,4 +15,9 @@ class Item < ApplicationRecord
       .group(:id)
       .having("count(invoice_items.id) = 1")
   end
+
+  def self.find_by_name(name)
+    where("items.name ILIKE '%#{name}%'")
+    .order("lower(name)")
+  end
 end

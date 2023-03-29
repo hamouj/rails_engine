@@ -7,5 +7,4 @@ class Merchant < ApplicationRecord
     .order("lower(name)")
     .first
   end
-
 end

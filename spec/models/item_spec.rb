@@ -21,9 +21,9 @@ describe Item, type: :model do
       @merchant1 = create(:merchant)
       @merchant2 = create(:merchant)
 
-      @item1 = create(:item, merchant_id: @merchant1.id)
-      @item2 = create(:item, merchant_id: @merchant1.id)
-      @item3 = create(:item, merchant_id: @merchant2.id)
+      @item1 = create(:item, merchant_id: @merchant1.id, name: "Jasmine")
+      @item2 = create(:item, merchant_id: @merchant1.id, name: "Rostam")
+      @item3 = create(:item, merchant_id: @merchant2.id, name: "Kastam")
     end
 
     describe '::for_merchant()' do
@@ -33,6 +33,32 @@ describe Item, type: :model do
         item4 = create(:item, merchant_id: @merchant1.id)
 
         expect(Item.for_merchant(@merchant1.id)).to eq([@item1, @item2, item4])
+      end
+    end
+
+    describe "::find_by_name()" do
+      it "returns a Item based on a complete name match" do
+        expect(Item.find_by_name("Jasmine")).to eq([@item1])
+        expect(Item.find_by_name("Rostam")).to eq([@item2])
+      end
+
+      it "returns a Item based on a partial name match" do
+        expect(Item.find_by_name("min")).to eq([@item1])
+        expect(Item.find_by_name("os")).to eq([@item2])
+      end
+
+      it "returns a Item based on a parital name match (case insensitive)" do
+        expect(Item.find_by_name('jas')).to eq([@item1])
+        expect(Item.find_by_name('ro')).to eq([@item2])
+      end
+
+      it "returns all partial and complete name matches in alphabetical order" do
+        expect(Item.find_by_name('as')).to eq([@item1, @item3])
+        expect(Item.find_by_name('am')).to eq([@item3, @item2])
+      end
+
+      it "returns nil when there are no matches" do
+        expect(Item.find_by_name('x')).to eq([])
       end
     end
   end
