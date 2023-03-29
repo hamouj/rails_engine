@@ -34,6 +34,29 @@ describe "Items API" do
       end
     end
 
+    it "returns an empty array when no items exist" do
+      get "/api/v1/items"
+
+      expect(response).to be_successful
+
+      response_body = JSON.parse(response.body, symbolize_names: true)[:data]
+      
+      expect(response_body).to eq([])
+    end
+
+    it "returns an array when only one item exists" do
+      create(:item)
+
+      get "/api/v1/items"
+
+      expect(response).to be_successful
+
+      merchant = JSON.parse(response.body, symbolize_names: true)[:data]
+
+      expect(merchant).to be_an Array
+      expect(merchant.count).to eq(1)
+    end
+
     it "can get one item by its id" do
       merchant_id = create(:merchant).id
       id = create(:item, merchant_id: merchant_id).id
@@ -234,31 +257,6 @@ describe "Items API" do
   end
 
   describe "sad path testing" do
-    describe "get all items" do
-      it "returns an empty array when no items exist" do
-        get "/api/v1/items"
-
-        expect(response).to be_successful
-
-        response_body = JSON.parse(response.body, symbolize_names: true)[:data]
-        
-        expect(response_body).to eq([])
-      end
-
-      it "returns an array when only one item exists" do
-        create(:item)
-
-        get "/api/v1/items"
-
-        expect(response).to be_successful
-
-        merchant = JSON.parse(response.body, symbolize_names: true)[:data]
-
-        expect(merchant).to be_an Array
-        expect(merchant.count).to eq(1)
-      end
-    end
-
     describe "get one item" do
       it "returns a json error message when the item does not exist" do
         get "/api/v1/items/180984789"
