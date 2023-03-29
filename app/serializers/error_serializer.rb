@@ -20,4 +20,10 @@ class ErrorSerializer
         end
     }
   end
+
+  def self.undefined_error
+    {
+      "data": {}
+    }
+  end
 end
