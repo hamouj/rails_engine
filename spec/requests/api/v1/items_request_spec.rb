@@ -435,7 +435,7 @@ describe "Items API" do
       it "return a json error message when the item ID is entered as a string" do
         item_id = create(:item).id
         patch "/api/v1/items/'#{item_id}'"
-
+    
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
 
