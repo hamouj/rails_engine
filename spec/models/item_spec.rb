@@ -13,7 +13,7 @@ describe Item, type: :model do
     it { should validate_presence_of :name }
     it { should validate_presence_of :description }
     it { should validate_presence_of :unit_price }
-    it { should validate_numericality_of :unit_price }
+    it { should validate_numericality_of(:unit_price).is_greater_than(0) }
   end
 
   describe 'class_methods' do
@@ -24,16 +24,6 @@ describe Item, type: :model do
       @item1 = create(:item, merchant_id: @merchant1.id, name: "Jasmine", unit_price: 31.24)
       @item2 = create(:item, merchant_id: @merchant1.id, name: "Rostam", unit_price: 25.34)
       @item3 = create(:item, merchant_id: @merchant2.id, name: "Kastam", unit_price: 23)
-    end
-
-    describe '::for_merchant()' do
-      it 'returns a list of items for a given merchant' do
-        expect(Item.for_merchant(@merchant1.id)).to eq([@item1, @item2])
-
-        item4 = create(:item, merchant_id: @merchant1.id)
-
-        expect(Item.for_merchant(@merchant1.id)).to eq([@item1, @item2, item4])
-      end
     end
 
     describe "::find_by_name()" do

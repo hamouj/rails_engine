@@ -11,13 +11,13 @@ class ErrorSerializer
     }
   end
 
-  def self.item_serialized_json(error)
+  def self.validation_serialized_json(error)
     {
       "message": "your query could not be completed",
       "errors":
-        error.full_messages.each do |message|
-          "#{message}"
-        end
+        error.message.split(',').map do |message|
+          message.strip
+        end 
     }
   end
 
