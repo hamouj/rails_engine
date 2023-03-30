@@ -51,7 +51,8 @@ describe "Merchant/Items API" do
 
   describe "edge case testing" do
     it "returns a json error message when the merchant id is a string" do
-      get "/api/v1/merchants/'180AA4789'/items"
+      merchant_id = create(:merchant).id
+      get "/api/v1/merchants/'#{merchant_id}'/items"
 
       expect(response.status).to eq(404)
 
@@ -61,7 +62,7 @@ describe "Merchant/Items API" do
       expect(response_body[:message]).to eq("your query could not be completed")
       expect(response_body).to have_key :errors
       expect(response_body[:errors]).to be_an Array
-      expect(response_body[:errors].first).to eq("Couldn't find Merchant with 'id'='180AA4789'")
+      expect(response_body[:errors].first).to eq("Couldn't find Merchant with 'id'='#{merchant_id}'")
     end
   end
 end
