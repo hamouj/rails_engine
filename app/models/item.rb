@@ -15,4 +15,25 @@ class Item < ApplicationRecord
       .group(:id)
       .having("count(invoice_items.id) = 1")
   end
+
+  def self.find_by_name(name)
+    where("items.name ILIKE '%#{name}%'")
+    .order("lower(name)")
+  end
+
+  def self.find_by_min_price(price)
+    where("items.unit_price >= ?", price)
+    .order(:unit_price)
+  end
+
+  def self.find_by_max_price(price)
+    where("items.unit_price <= ?", price)
+    .order(:unit_price)
+  end
+
+  def self.find_by_min_max_price(min_price, max_price)
+    where("items.unit_price between #{min_price} AND #{max_price}")
+    .order(:unit_price)
+  end
+
 end
