@@ -5,9 +5,7 @@ class Item < ApplicationRecord
 
   validates :name, presence: true
   validates :description, presence: true
-  validates :unit_price, presence: true, numericality: true
-
-  scope :for_merchant, ->(merchant_id) { where(merchant_id: merchant_id) }
+  validates :unit_price, presence: true, numericality: { greater_than: 0 }
 
   def find_single_item_invoices
     invoices
@@ -35,5 +33,4 @@ class Item < ApplicationRecord
     where("items.unit_price between #{min_price} AND #{max_price}")
     .order(:unit_price)
   end
-
 end
