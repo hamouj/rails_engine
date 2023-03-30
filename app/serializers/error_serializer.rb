@@ -35,4 +35,13 @@ class ErrorSerializer
         ]
     }
   end
+
+  def self.incorrect_parameter
+    {
+      "message": "your query could not be completed",
+        "errors": [
+          "parameter is incorrect"
+        ]
+    }
+  end
 end

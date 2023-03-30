@@ -21,9 +21,9 @@ describe Item, type: :model do
       @merchant1 = create(:merchant)
       @merchant2 = create(:merchant)
 
-      @item1 = create(:item, merchant_id: @merchant1.id, name: "Jasmine")
-      @item2 = create(:item, merchant_id: @merchant1.id, name: "Rostam")
-      @item3 = create(:item, merchant_id: @merchant2.id, name: "Kastam")
+      @item1 = create(:item, merchant_id: @merchant1.id, name: "Jasmine", unit_price: 31.24)
+      @item2 = create(:item, merchant_id: @merchant1.id, name: "Rostam", unit_price: 25.34)
+      @item3 = create(:item, merchant_id: @merchant2.id, name: "Kastam", unit_price: 23)
     end
 
     describe '::for_merchant()' do
@@ -57,8 +57,41 @@ describe Item, type: :model do
         expect(Item.find_by_name('am')).to eq([@item3, @item2])
       end
 
-      it "returns nil when there are no matches" do
+      it "returns an empty array when there are no matches" do
         expect(Item.find_by_name('x')).to eq([])
+      end
+    end
+
+    describe "::find_by_min_price()" do
+      it "returns items that are greater than or equal to the given price" do
+        expect(Item.find_by_min_price(24)).to eq([@item2, @item1])
+        expect(Item.find_by_min_price(20.2)).to eq([@item3, @item2, @item1])
+      end
+
+      it "returns an empty array when there are no matches" do
+        expect(Item.find_by_min_price(60.03)).to eq([])
+      end
+    end
+
+    describe "::find_by_max_price()" do
+      it "returns items that are less than or equal to the given price" do
+        expect(Item.find_by_max_price(24)).to eq([@item3])
+        expect(Item.find_by_max_price(25.34)).to eq([@item3, @item2])
+      end
+
+      it "returns an empty array when there are no matches" do
+        expect(Item.find_by_max_price(0.03)).to eq([])
+      end
+    end
+
+    describe "::find_by_min_max_price()" do
+      it "returns items that are less than or equal to the given price" do
+        expect(Item.find_by_min_max_price(24, 40)).to eq([@item2, @item1])
+        expect(Item.find_by_min_max_price(20.1, 70)).to eq([@item3, @item2, @item1])
+      end
+
+      it "returns an empty array when there are no matches" do
+        expect(Item.find_by_min_max_price(0.03, 1)).to eq([])
       end
     end
   end

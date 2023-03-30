@@ -4,7 +4,7 @@
 class Api::V1::Merchants::FindController < ApplicationController
   def show
     if !params[:name].present?
-      render json: ErrorSerializer.missing_parameter, status: 404
+      render json: ErrorSerializer.missing_parameter, status: 400
     elsif Merchant.find_by_name(params[:name]).nil?
       render json: ErrorSerializer.undefined_error, status: 200
     else
