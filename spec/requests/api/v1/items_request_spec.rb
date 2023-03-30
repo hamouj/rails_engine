@@ -343,7 +343,8 @@ describe "Items API" do
   describe "edge case testing" do
     describe "get one item" do
       it "returns a json error message when the item id is a string" do
-        get "/api/v1/items/'1809A4789'"
+        item_id = create(:item).id
+        get "/api/v1/items/'#{item_id}'"
 
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
@@ -354,7 +355,7 @@ describe "Items API" do
         expect(response_body[:message]).to eq("your query could not be completed")
         expect(response_body).to have_key :errors
         expect(response_body[:errors]).to be_an Array
-        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='1809A4789'")
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='#{item_id}'")
       end
     end
 
@@ -432,8 +433,9 @@ describe "Items API" do
       end
 
       it "return a json error message when the item ID is entered as a string" do
-        patch "/api/v1/items/'5678934'"
-
+        item_id = create(:item).id
+        patch "/api/v1/items/'#{item_id}'"
+    
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
 
@@ -443,7 +445,7 @@ describe "Items API" do
         expect(response_body[:message]).to eq("your query could not be completed")
         expect(response_body).to have_key :errors
         expect(response_body[:errors]).to be_an Array
-        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='5678934'")
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='#{item_id}'")
       end
 
       it "returns a json error when a negative number is entered as the unit price" do
@@ -473,7 +475,8 @@ describe "Items API" do
 
     describe "delete an item" do
       it "returns a json error message when the item ID is entered as a string" do
-        delete "/api/v1/items/'5678934'"
+        item_id = create(:item).id
+        delete "/api/v1/items/'#{item_id}'"
 
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
@@ -484,7 +487,7 @@ describe "Items API" do
         expect(response_body[:message]).to eq("your query could not be completed")
         expect(response_body).to have_key :errors
         expect(response_body[:errors]).to be_an Array
-        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='5678934'")
+        expect(response_body[:errors].first).to eq("Couldn't find Item with 'id'='#{item_id}'")
       end
     end
   end
