@@ -3,7 +3,7 @@
 # ./app/controllers/api/v1/item/merchants_controller.rb
 class Api::V1::Item::MerchantsController < ApplicationController
   def show
-    merchant = Item.find(params[:item_id]).merchant
-    render json: MerchantSerializer.new(merchant)
+    item = Item.find(params[:item_id])
+    render json: MerchantSerializer.new(item.merchant)
   end
 end

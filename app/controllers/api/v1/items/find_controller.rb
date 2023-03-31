@@ -2,8 +2,8 @@
 
 # ./app/controllers/api/v1/items/find_controller
 class Api::V1::Items::FindController < ApplicationController
+  before_action :positive_integer_check
   before_action :numericality_check
-  before_action :integer_check
   before_action :name_and_price_check
   
   def index
@@ -22,13 +22,13 @@ class Api::V1::Items::FindController < ApplicationController
 
   private
 
-  def numericality_check
+  def positive_integer_check
     if params[:min_price].to_f < 0 || params[:max_price].to_f < 0
       render json: ErrorSerializer.incorrect_parameter, status: 400
     end
   end
 
-  def integer_check
+  def numericality_check
     if (params[:min_price] && numeric?(params[:min_price]) == false) || (params[:max_price] && numeric?(params[:max_price]) == false)
       render json: ErrorSerializer.incorrect_parameter, status: 400
     end
